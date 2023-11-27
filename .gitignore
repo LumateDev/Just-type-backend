@@ -1,0 +1,6 @@
+/venv/
+
+# IntellijIdea files
+*.iml
+.idea
+out
