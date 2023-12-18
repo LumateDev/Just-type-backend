@@ -10,6 +10,7 @@ class UserViewRegister(GenericAPIView):
 
     serializer_class = UserRegSerializer
 
+
     def post(self, request):
         user = request.data
         serializer = self.serializer_class(data=user)
