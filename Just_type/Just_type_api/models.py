@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from djongo import models as md
 
 
 class UserManager(BaseUserManager):
@@ -47,3 +48,13 @@ class User(AbstractUser):
     class Meta:
         verbose_name_plural = 'Пользователи'
         verbose_name = 'Пользователь'
+
+
+class User_Errors(md.Model):
+    userId = md.IntegerField()
+    letters = md.JSONField()
+
+
+class All_Words(md.Model):
+    word = models.CharField(max_length=100)
+    letters = md.JSONField()

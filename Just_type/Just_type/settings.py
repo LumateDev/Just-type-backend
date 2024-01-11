@@ -12,12 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AUTH_USER_MODEL = 'Just_type_api.User'
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -29,7 +27,6 @@ SECRET_KEY = 'django-insecure-jb_(!m@tnuzh_1l%i6#%6if*3@l1#-f!k#v9p)p(ecbmf@x4ic
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -45,7 +42,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist'
-
 
 ]
 
@@ -72,7 +68,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'Just_type.urls'
@@ -95,7 +90,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Just_type.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -107,9 +101,19 @@ DATABASES = {
         'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',
+    },
+    'just_type_mongodb': {
+        'ENGINE': 'djongo',
+        'NAME': 'just_type',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb://localhost:27017/',
+        },
     }
 }
 
+# роутер для управления базами данных
+DATABASE_ROUTERS = ['Just_type.router.JustTypeRouter', ]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -133,7 +137,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -144,7 +147,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
