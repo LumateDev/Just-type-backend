@@ -102,18 +102,10 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     },
-    'just_type_mongodb': {
-        'ENGINE': 'djongo',
-        'NAME': 'just_type',
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            'host': 'mongodb://localhost:27017/',
-        },
-    }
+
 }
 
-# роутер для управления базами данных
-DATABASE_ROUTERS = ['Just_type.router.JustTypeRouter', ]
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

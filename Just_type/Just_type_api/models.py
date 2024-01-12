@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from djongo import models as md
 
 
@@ -21,22 +21,13 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, username, password, **extra_fields):
 
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError(("is staff must be true for admin user"))
-
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError(("is superuser must be true for admin user"))
-
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser):
     username = models.CharField(max_length=20, unique=True)
     email = models.EmailField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
@@ -50,11 +41,11 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
 
 
-class User_Errors(md.Model):
-    userId = md.IntegerField()
-    letters = md.JSONField()
-
-
-class All_Words(md.Model):
-    word = models.CharField(max_length=100)
-    letters = md.JSONField()
+# class User_Errors(md.Model):
+#     userId = md.ObjectIdField(primary_key=True)
+#     letters = md.JSONField()
+#
+#
+# class All_Words(md.Model):
+#     word = models.CharField(max_length=100)
+#     letters = md.JSONField()

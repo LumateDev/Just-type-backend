@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, User_Errors, All_Words
+from .models import User
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -44,7 +44,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = authenticate(request, username=username, password=password)
         if not user:
-            raise AuthenticationFailed("invalid")
+            raise AuthenticationFailed("Неверный пароль")
         if not user.is_active:
             raise AuthenticationFailed("unactive")
 
@@ -55,17 +55,25 @@ class UserLoginSerializer(serializers.ModelSerializer):
         }
 
 
-class UserErrorsSerializer(serializers.ModelSerializer):
+class UserErrorsSerializer(serializers.Serializer):
     userId = serializers.IntegerField()
     letters = serializers.JSONField()
+    count_words = serializers.IntegerField(write_only=True)
 
     class Meta:
-        model = User_Errors
-        fields = ['userId', 'letters']
 
-    def update(self, instance, validated_data):
-        instance.userId = validated_data.get("userId", instance.userId)
-        instance.letters = validated_data.get("letters", instance.letters)
+        fields = ['userId', 'letters', 'count_words']
 
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.userId = validated_data.get("userId", instance.userId)
+    #     instance.letters = validated_data.get("letters", instance.letters)
+    #
+    #     instance.save()
+    #     return instance
+
+
+class UserErrorResetSerializer(serializers.Serializer):
+    letters = serializers.JSONField(read_only=True)
+
+    class Meta:
+        fields = ['letters']
