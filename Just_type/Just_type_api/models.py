@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from djongo import models as md
 
 
 class UserManager(BaseUserManager):
@@ -41,11 +40,32 @@ class User(AbstractBaseUser):
         verbose_name = 'Пользователь'
 
 
-# class User_Errors(md.Model):
-#     userId = md.ObjectIdField(primary_key=True)
-#     letters = md.JSONField()
-#
-#
-# class All_Words(md.Model):
-#     word = models.CharField(max_length=100)
-#     letters = md.JSONField()
+class User_Data(models.Model):
+    userId = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    bestWPM = models.IntegerField(default=None)
+    averageWPM = models.IntegerField(default=None)
+    total_tests = models.IntegerField(default=None)
+
+    class Meta:
+        verbose_name_plural = 'Статистика пользователей'
+        verbose_name = 'Статистика пользователя'
+
+
+class User_Experience(models.Model):
+    userId = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    experience = models.IntegerField(default=None)
+    level = models.IntegerField(default=None)
+
+    class Meta:
+        verbose_name_plural = 'Статистика пользователей'
+        verbose_name = 'Статистика пользователя'
+
+
+class User_Errors(models.Model):
+    userId = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    letters = models.JSONField()
+
+
+class All_Words(models.Model):
+    word = models.CharField(max_length=100)
+    letters = models.JSONField()
