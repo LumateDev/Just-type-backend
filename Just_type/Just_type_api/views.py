@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializer import *
 
-from .utils import Mongo_DB, Mongo_DB_Recommendation
+from .utils import Errors
 
 
 class UserViewRegister(GenericAPIView):
@@ -14,16 +14,14 @@ class UserViewRegister(GenericAPIView):
     def post(self, request):
         user = request.data
         serializer = self.serializer_class(data=user)
+
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             user_data = serializer.data
-
             user_id = serializer.data["id"]
-            print("Дима сказал въебать сюда принты, гы: ", user_id)
-
-            our_base = Mongo_DB()
-            our_base.create_table_errors(user_id)
-            print("Если всё збс, то ты видишь этот принт и тэйбл ин датабазе")
+            # create table errors for user
+            errors = Errors()
+            errors.create_user_errors_record(user_id)
 
             return Response({
                 'data': user_data,
@@ -55,20 +53,20 @@ class UserErrorView(GenericAPIView):
         serializer = self.serializer_class(data=request.data, context={'request': request})
 
         if serializer.is_valid():
-            our_base = Mongo_DB()
-            our_base.update_user_errors(user_id, serializer.data["letters"])
+            errors = Errors()
+            errors.update_user_errors(user_id, serializer.data["letters"])
 
-            our_recommendation = Mongo_DB_Recommendation()
+            user_errors = errors.get_user_errors(user_id)
 
-            user_errors = our_recommendation.get_user_errors(user_id)
             if user_errors:
-                top_errors = our_recommendation.get_top_errors(user_errors)
-                unique_words = our_recommendation.get_unique_words_by_errors(top_errors, count_words)
+                top_errors = errors.get_top_errors(user_errors)
+                unique_words = errors.get_unique_words_by_errors(top_errors, count_words)
                 print("Топовые ошибки пользователя:", top_errors)
                 print("Уникальные слова по этим ошибкам:", unique_words)
                 print(len(unique_words))
             else:
                 print(f"Документ с user_id {user_id} не найден.")
+            pass
 
             return Response({
                 'errors_data': serializer.data,
@@ -79,14 +77,15 @@ class UserErrorView(GenericAPIView):
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, pk=''):
+    # Попробовать убрать pk = '', -> pk
+    def get(self, request, pk='') -> Response:
         user_id = pk
 
         if not user_id:
             return Response({"message": "NonAuthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        our_base = Mongo_DB_Recommendation()
-        user_errors = our_base.get_user_errors(user_id)
+        error = Errors()
+        user_errors = error.get_user_errors(user_id)
 
         if user_errors:
             return Response({
@@ -107,8 +106,8 @@ class UserErrorView(GenericAPIView):
         serializer = UserErrorResetSerializer()
 
         try:
-            our_base = Mongo_DB()
-            our_base.reset_user_errors(user_id)
+            errors = Errors()
+            errors.reset_user_errors(user_id)
             return Response({
                 'errors_data': serializer.data,
                 'message': f'Слова для пользователя {user_id} удаленны успешно',

@@ -62,7 +62,7 @@ class User_Experience(models.Model):
 
 
 class User_Errors(models.Model):
-    userId = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, db_column="user_id")
     letters = models.JSONField()
 
 
