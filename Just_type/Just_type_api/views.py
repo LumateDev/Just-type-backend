@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializer import *
 
-from .utils import Errors
+from .utils import Errors, Statics, Experience
 
 
 class UserViewRegister(GenericAPIView):
@@ -19,9 +19,14 @@ class UserViewRegister(GenericAPIView):
             serializer.save()
             user_data = serializer.data
             user_id = serializer.data["id"]
-            # create table errors for user
+            # create table errors, stats, experience  for user
             errors = Errors()
+            statistics = Statics()
+            experience = Experience()
+
             errors.create_user_errors_record(user_id)
+            statistics.create_user_stats_record(user_id)
+            experience.create_user_experience_record(user_id)
 
             return Response({
                 'data': user_data,
@@ -63,7 +68,6 @@ class UserErrorView(GenericAPIView):
                 unique_words = errors.get_unique_words_by_errors(top_errors, count_words)
                 print("Топовые ошибки пользователя:", top_errors)
                 print("Уникальные слова по этим ошибкам:", unique_words)
-                print(len(unique_words))
             else:
                 print(f"Документ с user_id {user_id} не найден.")
             pass
@@ -77,7 +81,6 @@ class UserErrorView(GenericAPIView):
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-    # Попробовать убрать pk = '', -> pk
     def get(self, request, pk='') -> Response:
         user_id = pk
 

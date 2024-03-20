@@ -41,7 +41,7 @@ class User(AbstractBaseUser):
 
 
 class User_Data(models.Model):
-    userId = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     bestWPM = models.IntegerField(default=None)
     averageWPM = models.IntegerField(default=None)
     total_tests = models.IntegerField(default=None)
@@ -52,7 +52,7 @@ class User_Data(models.Model):
 
 
 class User_Experience(models.Model):
-    userId = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     experience = models.IntegerField(default=None)
     level = models.IntegerField(default=None)
 
