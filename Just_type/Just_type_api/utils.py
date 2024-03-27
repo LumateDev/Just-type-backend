@@ -56,12 +56,38 @@ class Errors:
 
 
 class Statics:
-    def create_user_stats_record(self, user_id):
-        user_data = User_Data(user_id_id=user_id, bestWPM=0, averageWPM=0, total_tests=0)
+    def create_user_stats_record(self, user_id, current_wpm, current_accuracy):
+        user_data = User_Data(user_id_id=user_id, best_WPM=current_wpm, average_WPM=current_wpm, average_accuracy=current_accuracy, best_accuracy=current_accuracy, tests_count=1)
         user_data.save()
+
+    def update_user_stats_record(self, user_id, wpm, accuracy):
+
+        data = User_Data.objects.get(pk=user_id)
+
+        # Создать и сохранить поля
+        average_wpm = (data.average_WPM * (data.tests_count - 1) + wpm) / data.tests_count
+        data.average_WPM = average_wpm
+        data.best_WPM = max(data.best_WPM, wpm)
+
+        average_accuracy = (data.average_accuracy * (data.tests_count - 1) + accuracy) / data.tests_count
+        data.average_accuracy = average_accuracy
+        data.best_accuracy = max(data.best_accuracy, accuracy)
+
+        data.tests_count += 1
+        data.save()
 
 
 class Experience:
-    def create_user_experience_record(self, user_id):
-        user_experience = User_Experience(user_id_id=user_id, experience=0, level=0)
+    def create_user_experience_record(self, user_id, exp):
+        user_experience = User_Experience(user_id_id=user_id, experience=exp, level=1)
+        user_experience.save()
+
+    def update_user_experience_record(self, user_id, exp):
+        user_experience = User_Experience.objects.get(pk=user_id)
+
+        user_experience.experience += exp
+        level_up_thresholds = [100, 200, 300, 400, 500]
+        for i, level_up_threshold in enumerate(level_up_thresholds):
+            if user_experience.experience >= level_up_threshold:
+                user_experience.level = i + 1
         user_experience.save()

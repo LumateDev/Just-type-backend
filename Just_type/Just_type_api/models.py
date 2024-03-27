@@ -42,10 +42,11 @@ class User(AbstractBaseUser):
 
 class User_Data(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    bestWPM = models.IntegerField(default=None)
-    averageWPM = models.IntegerField(default=None)
-    total_tests = models.IntegerField(default=None)
-
+    best_WPM = models.IntegerField(default=None)
+    average_WPM = models.IntegerField(default=None)
+    tests_count = models.IntegerField(default=None)
+    average_accuracy = models.IntegerField(default=None)
+    best_accuracy = models.IntegerField(default=None)
     class Meta:
         verbose_name_plural = 'Статистика пользователей'
         verbose_name = 'Статистика пользователя'

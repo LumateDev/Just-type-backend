@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from .serializer import *
+from .models import User_Data, User_Errors
 
 from .utils import Errors, Statics, Experience
 
@@ -81,7 +82,7 @@ class UserErrorView(GenericAPIView):
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, pk='') -> Response:
+    def get(self, request, pk) -> Response:
         user_id = pk
 
         if not user_id:
@@ -119,3 +120,54 @@ class UserErrorView(GenericAPIView):
 
         except Exception as e:
             return Response(e, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDataView(GenericAPIView):
+    serializer_class = UserDataSerializer
+
+    def post(self, request):
+        print(request.data, "DYVVFYBT")
+        user_id = request.data.get("user_id", None)
+
+
+        if not user_id:
+            return Response({"message": "NonAuthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = UserDataSerializer(data=request.data)
+
+        try:
+            if serializer.is_valid():
+                wpm = serializer.data['WPM']
+                accuracy = serializer.data['accuracy']
+
+                exp = serializer.data['experience']
+
+                stats = Statics()
+                stats.create_user_stats_record(user_id, wpm, accuracy)
+                stats.update_user_stats_record(user_id, wpm, accuracy)
+
+                experience = Experience()
+                experience.create_user_experience_record(user_id, exp)
+                experience.update_user_experience_record(user_id, exp)
+
+                return Response({
+                    'data': serializer.data,
+                    'message': "Успешно 200 ок",
+
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print(e)
+            return Response({"sorry" : "1"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # def get(self, request):
+    #     # Просто отдать данные
+    #     user_id = request.GET.get("userId", None)
+    #     data = User_Data.objects.get(pk=user_id)
+    #     serializer = UserDataSerializer(data)
+    #     return Response(serializer.data)
+
+
+

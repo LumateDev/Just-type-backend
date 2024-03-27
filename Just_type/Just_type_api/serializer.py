@@ -77,3 +77,14 @@ class UserErrorResetSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['letters']
+
+
+class UserDataSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    experience = serializers.IntegerField()
+    WPM = serializers.IntegerField()
+    accuracy = serializers.IntegerField()
+    tests_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        fields = ['user_id', 'experience', 'WPM', 'accuracy', 'test_count']

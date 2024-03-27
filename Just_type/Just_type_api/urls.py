@@ -10,6 +10,7 @@ urlpatterns = [
     path('token/refresh', TokenRefreshView.as_view(), name='refresh'),
     path('api/errors', UserErrorView.as_view(), name='errors'),
     path('api/errors/<int:pk>', UserErrorView.as_view(), name='get_errors'),
-    path('api/errors/reset/<int:pk>', UserErrorView.as_view(), name='get_errors')
+    path('api/errors/reset/<int:pk>', UserErrorView.as_view(), name='get_errors'),
+    path('api/user/data', UserDataView.as_view(), name='user_data'),
 
 ]
