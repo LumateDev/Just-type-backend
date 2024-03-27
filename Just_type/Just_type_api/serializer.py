@@ -61,15 +61,7 @@ class UserErrorsSerializer(serializers.Serializer):
     count_words = serializers.IntegerField(write_only=True)
 
     class Meta:
-
         fields = ['userId', 'letters', 'count_words']
-
-    # def update(self, instance, validated_data):
-    #     instance.userId = validated_data.get("userId", instance.userId)
-    #     instance.letters = validated_data.get("letters", instance.letters)
-    #
-    #     instance.save()
-    #     return instance
 
 
 class UserErrorResetSerializer(serializers.Serializer):
@@ -81,10 +73,10 @@ class UserErrorResetSerializer(serializers.Serializer):
 
 class UserDataSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
-    experience = serializers.IntegerField()
-    WPM = serializers.IntegerField()
-    accuracy = serializers.IntegerField()
-    tests_count = serializers.IntegerField(read_only=True)
+    experience = serializers.FloatField()
+    WPM = serializers.FloatField()
+    accuracy = serializers.FloatField()
+    tests_count = serializers.FloatField(read_only=True)
 
     class Meta:
         fields = ['user_id', 'experience', 'WPM', 'accuracy', 'test_count']

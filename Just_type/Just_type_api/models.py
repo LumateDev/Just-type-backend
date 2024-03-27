@@ -40,21 +40,22 @@ class User(AbstractBaseUser):
         verbose_name = 'Пользователь'
 
 
-class User_Data(models.Model):
+class UserData(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    best_WPM = models.IntegerField(default=None)
-    average_WPM = models.IntegerField(default=None)
+    best_WPM = models.FloatField(default=None)
+    average_WPM = models.FloatField(default=None)
     tests_count = models.IntegerField(default=None)
-    average_accuracy = models.IntegerField(default=None)
-    best_accuracy = models.IntegerField(default=None)
+    average_accuracy = models.FloatField(default=None)
+    best_accuracy = models.FloatField(default=None)
+
     class Meta:
         verbose_name_plural = 'Статистика пользователей'
         verbose_name = 'Статистика пользователя'
 
 
-class User_Experience(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    experience = models.IntegerField(default=None)
+class UserExperience(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, db_column='user_id')
+    experience = models.FloatField(default=None)
     level = models.IntegerField(default=None)
 
     class Meta:
@@ -62,11 +63,11 @@ class User_Experience(models.Model):
         verbose_name = 'Статистика пользователя'
 
 
-class User_Errors(models.Model):
+class UserErrors(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, db_column="user_id")
     letters = models.JSONField()
 
 
-class All_Words(models.Model):
+class AllWords(models.Model):
     word = models.CharField(max_length=100)
     letters = models.JSONField()

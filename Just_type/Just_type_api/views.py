@@ -1,11 +1,7 @@
-from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from .serializer import *
-from .models import User_Data, User_Errors
-
 from .utils import Errors, Statics, Experience
 
 
@@ -26,8 +22,8 @@ class UserViewRegister(GenericAPIView):
             experience = Experience()
 
             errors.create_user_errors_record(user_id)
-            statistics.create_user_stats_record(user_id)
-            experience.create_user_experience_record(user_id)
+            statistics.create_user_stats_record(user_id, 0, 0)
+            experience.create_user_experience_record(user_id, 0)
 
             return Response({
                 'data': user_data,
@@ -83,6 +79,7 @@ class UserErrorView(GenericAPIView):
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, pk) -> Response:
+
         user_id = pk
 
         if not user_id:
@@ -98,7 +95,7 @@ class UserErrorView(GenericAPIView):
 
             }, status=status.HTTP_200_OK)
         else:
-            print(f"Документ с user_id {user_id} не найден.")
+
             return Response(user_errors.data, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
@@ -114,7 +111,7 @@ class UserErrorView(GenericAPIView):
             errors.reset_user_errors(user_id)
             return Response({
                 'errors_data': serializer.data,
-                'message': f'Слова для пользователя {user_id} удаленны успешно',
+                'message': f'Ошибки для пользователя {user_id} удаленны успешно',
 
             }, status=status.HTTP_200_OK)
 
@@ -126,9 +123,7 @@ class UserDataView(GenericAPIView):
     serializer_class = UserDataSerializer
 
     def post(self, request):
-        print(request.data, "DYVVFYBT")
         user_id = request.data.get("user_id", None)
-
 
         if not user_id:
             return Response({"message": "NonAuthorized"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -137,17 +132,14 @@ class UserDataView(GenericAPIView):
 
         try:
             if serializer.is_valid():
-                wpm = serializer.data['WPM']
-                accuracy = serializer.data['accuracy']
-
+                current_wpm = serializer.data['WPM']
+                current_accuracy = serializer.data['accuracy']
                 exp = serializer.data['experience']
 
                 stats = Statics()
-                stats.create_user_stats_record(user_id, wpm, accuracy)
-                stats.update_user_stats_record(user_id, wpm, accuracy)
+                stats.update_user_stats_record(user_id, current_wpm, current_accuracy)
 
                 experience = Experience()
-                experience.create_user_experience_record(user_id, exp)
                 experience.update_user_experience_record(user_id, exp)
 
                 return Response({
@@ -160,14 +152,42 @@ class UserDataView(GenericAPIView):
 
         except Exception as e:
             print(e)
-            return Response({"sorry" : "1"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"sorry": "1"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # def get(self, request):
-    #     # Просто отдать данные
-    #     user_id = request.GET.get("userId", None)
-    #     data = User_Data.objects.get(pk=user_id)
-    #     serializer = UserDataSerializer(data)
-    #     return Response(serializer.data)
+    def get(self, request, pk) -> Response:
+
+        user_id = pk
+
+        if not user_id:
+            return Response({"message": "NonAuthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        stats = Statics()
+        exp = Experience()
+        user_stats = stats.get_user_stats(user_id)
+        user_exp = exp.get_user_exp(user_id)
+        threshold = exp.get_level_up_thresholds(current_level=user_exp.level+1)
+
+        print(user_exp)
+        print(user_stats)
+        print(user_stats.__dict__.items())
+        #print(dir(user_exp), user_exp.__dict__.items())
 
 
+        if user_exp and user_stats:
+            return Response({
+                'data' : {'user_id': user_id,
+                          'experience': user_exp.experience,
+                          'level': user_exp.level,
+                          'average_WPM': user_stats.average_WPM,
+                          'average_accuracy': user_stats.average_accuracy,
+                          'best_WPM': user_stats.best_WPM,
+                          'best_accuracy': user_stats.best_accuracy,
+                          'tests_count': user_stats.tests_count,
+                          'threshold': threshold
+                                                         },
+                'message': f'Информация о статистике пользователя {user_id} получена успешно',
 
+            }, status=status.HTTP_200_OK)
+        else:
+
+            return Response({user_stats.data, user_exp}, status=status.HTTP_400_BAD_REQUEST)
